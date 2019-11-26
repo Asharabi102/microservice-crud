@@ -1,12 +1,17 @@
 package com.avows.crud.model;
 
-import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * @author ashar
@@ -18,18 +23,28 @@ public class User {
 	//First Name, Last name, email, phone number, address in 2 lines, list of accounts and balance in each account
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
+	
 	private String email;
 	private String firstName;
 	private String lastName;
 	private String phoneNumber;
+	
+	@Column(name="address1")
 	private String address1;
+	
+	@Column(name="address2")
 	private String address2;
 	
-	@Transient
-	private List<Account> accounts;
-
+	@JsonManagedReference
+	@OneToMany(cascade=CascadeType.ALL)
+    @JoinColumn(name = "user_id", updatable = false, insertable = false, nullable=false)
+    private Set<Account> accounts;
+	
+	public User() {}
+	
 	public Long getId() {
 		return id;
 	}
@@ -86,12 +101,13 @@ public class User {
 		this.address2 = address2;
 	}
 
-	public List<Account> getAccounts() {
+	public Set<Account> getAccounts() {
 		return accounts;
 	}
 
-	public void setAccounts(List<Account> accounts) {
+	public void setAccounts(Set<Account> accounts) {
 		this.accounts = accounts;
 	}
 
+	
 }

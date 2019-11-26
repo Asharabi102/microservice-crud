@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.avows.crud.dao.AccountDao;
 import com.avows.crud.dao.UserDao;
-import com.avows.crud.model.Account;
 import com.avows.crud.model.User;
 
 /**
  * @author ashar Nov 26, 2019
  */
 @RestController
-@RequestMapping(value = "/users")
+@RequestMapping(value = "/core")
 public class UserRestController {
 
 	@Autowired
@@ -33,16 +32,12 @@ public class UserRestController {
 
 	@GetMapping("/{id}")
 	public User getUser(@PathVariable("id") Long id) {
+		
 		User user = userDao.findById(id).get();
-		if (user != null) {
-			List<Account> accountList = accountDao.getAccountsByEmail(user.getEmail());
-			user.setAccounts(accountList);
-		}
-
 		return user;
 	}
 
-	@PostMapping
+	@PostMapping("/add")
 	public User add(@RequestBody User user) {
 		return userDao.save(user);
 	}
@@ -62,15 +57,10 @@ public class UserRestController {
 		userDao.delete(user);
 	}
 
-	@GetMapping
+	@GetMapping("/getAllUsers")
 	public List<User> getAllUsers() {
 		List<User> userList = userDao.findAll();
-		if (userList != null && !userList.isEmpty()) {
-			for (User user : userList) {
-				List<Account> accountList = accountDao.getAccountsByEmail(user.getEmail());
-				user.setAccounts(accountList);
-			}
-		}
+		
 		return userList;
 	}
 
